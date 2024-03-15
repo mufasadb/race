@@ -1,0 +1,7 @@
+race-fe is front end, currently deploys to 3000
+race-be is backend, currently deploys to 8001
+all the urls to each other and to the discord o-Auth setup are all hardcoded
+discord folder currently does nothing
+.env file goes into the racebe for now, eventually will need one in fe or a parent one to handle naming scheme
+knex migrate:latest inside be folder to get the DB up to speed
+setup to be postgress
