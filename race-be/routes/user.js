@@ -18,7 +18,13 @@ router.get('/:id', getUser, (req, res) => {
 })
 
 // Create user
+//check if the user is 'freney' or 'beachy' and give them admin roles
 router.post('/', async (req, res) => {
+  if (req.body.username === 'freney' || req.body.username === 'beachy') {
+    req.body.role = 'admin'
+  } else {
+    req.body.role = 'user'
+  }
   try {
     const newUser = await User.query().insert(req.body)
     res.status(201).json(newUser)
@@ -40,11 +46,11 @@ router.post('/:id/assign_team', getUser, async (req, res) => {
 })
 // Update user
 router.patch('/:id', getUser, async (req, res) => {
-  console.log('trying to update a user');
+  console.log('trying to update a user')
   try {
     const updatedUser = await res.user.$query().patch(req.body)
     res.json(updatedUser)
-    console.log("updated a user")
+    console.log('updated a user')
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
