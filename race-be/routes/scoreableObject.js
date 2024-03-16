@@ -5,6 +5,7 @@ const ScoringEvents = require('../models/scoringEvent.js')
 
 // Get all scoreableObjects
 router.get('/', async (req, res) => {
+  console.log('hit the / all endpoint')
   try {
     const scoreableObjects = await ScoreableObject.query()
     res.json(scoreableObjects)
@@ -15,11 +16,15 @@ router.get('/', async (req, res) => {
 
 // Get scoreableObject by ID
 router.get('/:id', getScoreableObject, (req, res) => {
+  console.log('hit the /id endpoint')
   res.json(res.scoreableObject)
 })
 
 // Create scoreableObject
 router.post('/', async (req, res) => {
+  if(res.points == 0){
+    res.status(400).json({ message: 'Points are required' })
+  }
   try {
     const newScoreableObject = await ScoreableObject.query().insert(req.body)
     res.status(201).json(newScoreableObject)
@@ -81,11 +86,8 @@ router.get('/user/:id', async (req, res) => {
 })
 
 //scoreable league bounties remaining
-router.get('/availableLeagueBounties', async (req, res) => {
-  //get all scoring events
-  //get all scoreable objects whose type is server_bounty
-  //filter out any scoreabkle objects who have a scoring event with that ID
-  //return the remaining scoreable objects
+router.get('/available/league-bounties', async (req, res) => {
+  console.log('trying to get league bounties')
   try {
     const scoringEvents = await ScoringEvents.query()
     const scoreableObjects = await ScoreableObject.query().where(
@@ -103,7 +105,7 @@ router.get('/availableLeagueBounties', async (req, res) => {
   }
 })
 //scoreable team bounties remaining for this team
-router.get('/availableTeamBounties/:id', async (req, res) => {
+router.get('/available/team-bounties/:id', async (req, res) => {
   //get all scoring events
   //get all scoreable objects whose type is team_bounty
   //filter out any scoreabkle objects who have a scoring event with that ID
@@ -129,14 +131,14 @@ router.get('/availableTeamBounties/:id', async (req, res) => {
 })
 
 //scoreable player bounties reamining for this player
-router.get('/availablePlayerBounties/:id', async (req, res) => {
+router.get('/available/player-bounties/:id', async (req, res) => {
   //get all scoring events
   //get all scoreable objects whose type is player_bounty
   //filter out any scoreabkle objects who have a scoring event with that ID
   //return the remaining scoreable objects
   try {
     const scoringEvents = await ScoringEvents.query().where(
-      'player_id',
+      'user_id',
       req.params.id
     )
     const scoreableObjects = await ScoreableObject.query().where(

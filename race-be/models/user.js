@@ -8,7 +8,8 @@ class User extends Model {
   static get idColumn () {
     return 'id'
   }
-  static get relationMappings() {
+  static get relationMappings () {
+    const ScoringEvent = require('./scoringEvent')
     return {
       scoringEvents: {
         relation: Model.HasManyRelation,
@@ -18,17 +19,19 @@ class User extends Model {
           to: 'scoringEvents.user_id'
         }
       }
-    };
+    }
   }
 
-  static get virtualAttributes() {
-    return ['totalScore'];
+  static get virtualAttributes () {
+    return ['totalScore']
   }
-  get totalScore() {
-    if (this.scoringEvents) {
-      return this.scoringEvents.reduce((total, scoringEvent) => total + scoringEvent.point_total, 0);
-    }
-    return null;
+  get totalScore () {
+    return this.scoringEvents
+      ? this.scoringEvents.reduce(
+          (total, scoringEvent) => total + scoringEvent.point_total,
+          0
+        )
+      : 0
   }
 
   static get jsonSchema () {

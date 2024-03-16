@@ -1,6 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const ScoringEvent = require('../models/scoringEvent.js')
+const ScoreableObject = require('../models/scoreableObject.js')
+const User = require('../models/user.js')
+const Team = require('../models/team.js')
 
 // Get all scoringEvents
 router.get('/', async (req, res) => {
@@ -19,10 +22,65 @@ router.get('/:id', getScoringEvent, (req, res) => {
 
 // Create scoringEvent
 router.post('/', async (req, res) => {
+  console.log('tried to make an eveent)')
+
+  //when trying to make an event, check the scoreable object type
+  // if the scoreable object's type is not league_bounty or team_bounty
+  // then make sure it has a user_id
+  // if it doesn't, return a 400
+  // if it is one of those types, check that it has team_id
+  // if it doesnt return a 400
+
+  // make sure that there isn't already a scoring event for that scoreable object
+
+  const scoreableObject = await ScoreableObject.query().findById(
+    req.body.scoreable_object_id
+  )
+  const user = await User.query().findById(req.body.user_id)
+  const team = await Team.query().findById(req.body.team_id)
+
+  if (
+    scoreableObject.submittable_type !== 'league_bounty' &&
+    scoreableObject.submittable_type !== 'team_bounty'
+  ) {
+    if (req.body.user_id === null) {
+      return res
+        .status(400)
+        .json({ message: 'User ID is required for this type of scoring event' })
+    }
+  }
+  if (
+    scoreableObject.submittable_type === 'league_bounty' ||
+    scoreableObject.submittable_type === 'team_bounty'
+  ) {
+    if (req.body.team_id === null) {
+      return res
+        .status(400)
+        .json({ message: 'Team ID is required for this type of scoring event' })
+    }
+  }
+  //if its a player bounty, check that the player doesnt already have a bounty by this scoreable object
+  if (scoreableObject.submittable_type === 'player_bounty') {
+    const scoringEvents = await ScoringEvent.query().where(
+      'user_id',
+      req.body.user_id
+    )
+    const existingBounty = scoringEvents.find(
+      event => event.scoreable_object_id === req.body.scoreable_object_id
+    )
+    if (existingBounty) {
+      return res
+        .status(400)
+        .json({
+          message: 'This player already has a bounty for this scoreable object'
+        })
+    }
+  }
   try {
     const newScoringEvent = await ScoringEvent.query().insert(req.body)
     res.status(201).json(newScoringEvent)
   } catch (err) {
+    console.log(err)
     res.status(400).json({ message: err.message })
   }
 })

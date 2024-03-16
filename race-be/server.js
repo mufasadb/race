@@ -11,15 +11,16 @@ const session = require('express-session')
 const DiscordStrategy = require('passport-discord').Strategy
 
 //Model Import
-const User = require('./models/User')
+const User = require('./models/user')
 
 //route imports
 const userRouter = require('./routes/user')
 const characterRouter = require('./routes/character')
 const scoreableObjectRouter = require('./routes/scoreableObject')
-// const scoreRouter = require('./routes/score')
 const leagueRouter = require('./routes/league')
 const teamRouter = require('./routes/team')
+const scoringEventRouter = require('./routes/scoringEvent')
+const dashboardDataRouter = require('./routes/dashboardData')
 
 //bind models to db
 const Knex = require('knex')
@@ -68,14 +69,11 @@ passport.use(
         let user = await User.query().findOne({ username: profile.username })
 
         if (!user) {
-          console.log('rcreated a user')
           user = await User.query().insert({
             username: profile.username,
             role: 'player' // default role
             // add other fields as necessary
           })
-        } else {
-          console.log('found a user')
         }
 
         done(null, user)
@@ -108,7 +106,7 @@ app.get(
   passport.authenticate('discord', { failureRedirect: '/login' }),
   function (req, res) {
     // Successful authentication, redirect home.
-    res.redirect('http://localhost:3000/CreateLeague')
+    res.redirect('http://localhost:3000/scoringEvent')
     // res.json({ success: true, user: req.user })
   }
 )
@@ -142,14 +140,22 @@ app.get('/auth/check', (req, res) => {
     res.send(false)
   }
 })
-app.get('/admin/check', (req, res) => {
-  console.log('checking admin')
-  if (req.isAuthenticated() && ensureRole('admin')) {
-    res.send({ isAdmin: true, userId: user.id })
+//create a route that takes the session
+//and returns the user's role, their team id and their userId
+app.get('/user', (req, res) => {
+  console.log('got a request on a user')
+  if (req.isAuthenticated()) {
+    res.send(req.user)
   } else {
-    console.log('not admin')
-    res.send(false)
+    //return a 401
+    res.status(401).send('You are not authenticated')
   }
+})
+
+//handle logout
+app.get('/auth/logout', (req, res) => {
+  req.logout()
+  res.send({ success: true })
 })
 
 // middlwear
@@ -174,6 +180,8 @@ app.use('/scoreable-objects', scoreableObjectRouter)
 // app.use('/score-events', scoreRouter)
 app.use('/leagues', leagueRouter)
 app.use('/teams', teamRouter)
+app.use('/scoring-events', scoringEventRouter)
+app.use('/dashboard-data', dashboardDataRouter)
 
 app.use((req, res, next) => {
   const err = new Error('Not Found')

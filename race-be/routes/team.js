@@ -49,7 +49,6 @@ router.delete('/:id', getTeam, async (req, res) => {
 
 // Middleware function for getting team by ID
 async function getTeam(req, res, next) {
-    console.log("tried to get team")
   let team;
   try {
     team = await Team.query().findById(req.params.id);

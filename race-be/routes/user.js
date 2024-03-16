@@ -40,6 +40,7 @@ router.post('/:id/assign_team', getUser, async (req, res) => {
 })
 // Update user
 router.patch('/:id', getUser, async (req, res) => {
+  console.log('trying to update a user');
   try {
     const updatedUser = await res.user.$query().patch(req.body)
     res.json(updatedUser)
