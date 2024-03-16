@@ -7,7 +7,9 @@ const ScoreableObjectsTable = () => {
 
   useEffect(() => {
     const fetchScoreableEvents = async () => {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoreable-objects/`)
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoreable-objects/`
+      )
       const data = await response.json()
       setScoreableEvents(data)
       console.log(data)

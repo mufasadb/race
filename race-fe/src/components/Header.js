@@ -11,7 +11,7 @@ const Header = ({ isLoggedIn, isAdmin }) => {
         {isLoggedIn && (
           <>
             <li>
-              <Link to='/points'>My Points</Link>
+              <Link to='/PlayerData'>My Page</Link>
             </li>
 
             <li>

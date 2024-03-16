@@ -140,10 +140,25 @@ const ScoringSubmission = () => {
       .catch(error => console.log(error))
   }
 
+  const convertToHumanReadable = scoreableType => {
+    switch (scoreableType) {
+      case 'player_bounty':
+        return 'Player Bounty'
+      case 'team_bounty':
+        return 'Team Bounty'
+      case 'league_bounty':
+        return 'League Bounty'
+      case 'server_bounty':
+        return 'Server Bounty'
+      default:
+        return 'Unknown'
+    }
+  }
+
   return (
     <div style={{ display: 'flex' }}>
       <form onSubmit={handleSubmit} style={{ flex: 1 }}>
-        <div>
+        <div className="form-field">
           <label htmlFor='scoreableObjectID'>Select your scoreable:</label>
           <select
             id='scoreableObjectID'
@@ -151,6 +166,10 @@ const ScoringSubmission = () => {
             onChange={handleScoreableChange}
             required
           >
+            <option key='' value=''>
+              Select a scoreable
+            </option>
+
             {scoreableObjects.map(obj => (
               <option key={obj.id} value={obj.id}>
                 {obj.name}
@@ -158,7 +177,7 @@ const ScoringSubmission = () => {
             ))}
           </select>
         </div>
-        <div>
+        <div className="form-field">
           <label htmlFor='leagueID'>League:</label>
           <select
             id='leagueID'
@@ -174,7 +193,7 @@ const ScoringSubmission = () => {
           </select>
         </div>
 
-        <div>
+        <div className="form-field">
           <label htmlFor='teamID'>Team:</label>
           <select
             id='teamID'
@@ -190,7 +209,7 @@ const ScoringSubmission = () => {
           </select>
         </div>
 
-        <div>
+        <div className="form-field">
           <label htmlFor='userID'>User:</label>
           <select
             id='userID'
@@ -216,7 +235,7 @@ const ScoringSubmission = () => {
         />
       </div> */}
 
-        <div>
+        <div className="form-field">
           <label htmlFor='evidenceURL'>Evidence URL:</label>
           <input
             id='evidenceURL'
@@ -300,7 +319,7 @@ const ScoringSubmission = () => {
                 fontWeight: 'bold'
               }}
             >
-              Type: {selectedScoreable.submittableType}
+              Type: {convertToHumanReadable(selectedScoreable.submittableType)}
             </span>
           </>
         ) : (

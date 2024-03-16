@@ -16,6 +16,7 @@ class Team extends Model {
       properties: {
         id: { type: 'integer' },
         name: { type: 'string', minLength: 1, maxLength: 255 },
+        colour: { type: 'string', minLength: 1, maxLength: 255 }
       }
     }
   }

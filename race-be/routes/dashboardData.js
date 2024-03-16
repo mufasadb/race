@@ -42,6 +42,7 @@ router.get('/team-comparison', async (req, res) => {
   for (const team of teams) {
     const teamData = {
       teamName: team.name,
+      teamColour: team.colour,
       totalPoints: 0,
       bountiesClaimed: 0,
       totalScoringEvents: 0,
@@ -63,6 +64,7 @@ router.get('/team-comparison', async (req, res) => {
         if (event.isBounty) {
           teamData.bountiesClaimed++
           if (event.createdAt > teamData.mostRecentBounty.claimedAt) {
+            teamData.mostRecentBounty.name = event.scoreableObject.name
             teamData.mostRecentBounty.claimedAt = event.createdAt
             const user = await User.query().findById(event.userId)
             teamData.mostRecentBounty.username = user.username
@@ -100,6 +102,7 @@ router.get('/leader-board', async (req, res) => {
     user.score = score
     user.scoredEventsCount = count
     user.teamName = teams.find(team => team.id === user.teamId).name
+    user.teamColour = teams.find(team => team.id === user.teamId).colour
     userScores.push(user)
   }
   userScores.sort((a, b) => {

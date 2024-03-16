@@ -6,12 +6,16 @@ const CreateTeam = () => {
   const [teamName, setTeamName] = useState('')
   const [existingTeams, setExistingTeams] = useState([])
   const [usersPerTeam, setUsersPerTeam] = useState([])
+  const [colour, setColour] = useState('')
 
   useEffect(() => {
     const fetchTeams = async () => {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/teams/`, {
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/teams/`,
+        {
+          credentials: 'include'
+        }
+      )
       const data = await response.json()
       console.log(data)
       setExistingTeams(data)
@@ -23,19 +27,23 @@ const CreateTeam = () => {
   //request users, iterate through and count team volume
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/users/`, {
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/users/`,
+        {
+          credentials: 'include'
+        }
+      )
       const data = await response.json()
       //for each user, if team matches position in existing teams array
       //increment the count of users per team in same position in userPerTeam Array
       data.forEach(user => {
+        console.log(user)
         existingTeams.forEach(team => {
-          if (user.team === team.id) {
-            setUsersPerTeam(prevState => {
-              const newState = [...prevState]
-              newState[team.id]++
-              return newState
+          if (user.teamId === team.id) {
+            setUsersPerTeam(prev => {
+              const newUsersPerTeam = [...prev]
+              newUsersPerTeam[existingTeams.indexOf(team)]++
+              return newUsersPerTeam
             })
           }
         })
@@ -48,21 +56,27 @@ const CreateTeam = () => {
   const handleTeamNameChange = event => {
     setTeamName(event.target.value)
   }
+  const handleColourChange = event => {
+    setColour(event.target.value)
+  }
 
   const handleSubmit = async event => {
     event.preventDefault()
     const csrftoken = Cookies.get('csrftoken')
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/teams/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken
-        },
-        body: JSON.stringify({ name: teamName }),
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/teams/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify({ name: teamName }),
+          credentials: 'include'
+        }
+      )
 
       const data = await response.json()
       console.log(data)
@@ -96,6 +110,16 @@ const CreateTeam = () => {
             name='teamName'
             value={teamName}
             onChange={handleTeamNameChange}
+          />
+        </div>
+        <div>
+          <label htmlFor='colour'>Colour:</label>
+          <input
+            type='text'
+            id='colour'
+            name='colour'
+            value={colour}
+            onChange={handleColourChange}
           />
         </div>
         <button type='submit'>Create Team</button>

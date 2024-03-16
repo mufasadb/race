@@ -1,6 +1,7 @@
 // Additional imports
 import React, { useState, useEffect } from 'react'
 import Cookies from 'js-cookie'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 const UserTable = () => {
   const [users, setUsers] = useState([])
@@ -16,9 +17,12 @@ const UserTable = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/users/`, {
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/users/`,
+        {
+          credentials: 'include'
+        }
+      )
       if (response.ok) {
         const data = await response.json()
         setUsers(data)
@@ -33,9 +37,12 @@ const UserTable = () => {
 
   const fetchTeams = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/teams/`, {
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/teams/`,
+        {
+          credentials: 'include'
+        }
+      )
       if (response.ok) {
         const data = await response.json()
         setTeams(data)
@@ -52,14 +59,17 @@ const UserTable = () => {
     console.log(userId, teamId)
     // Handle team assignment for user
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/users/${userId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ team_id: teamId }),
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/users/${userId}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ team_id: teamId }),
+          credentials: 'include'
+        }
+      )
       if (!response.ok) {
         const errorData = await response.json()
         console.error('Error data:', errorData)
@@ -153,17 +163,20 @@ const UserTable = () => {
                 <select
                   value={user.role}
                   onChange={e => handleRoleChange(user.id, e.target.value)}
+                  disabled={user.role !== 'admin'}
                 >
                   <option value='player'>Player</option>
                   <option value='team_leader'>Team Leader</option>
                   <option value='admin'>Admin</option>
                 </select>
               </td>
-              <td>
-                <button onClick={() => handleDeleteUser(user.id)}>
-                  Delete
-                </button>
-              </td>
+              {user.role !== 'admin' && (
+                <td>
+                  <button onClick={() => handleDeleteUser(user.id)}>
+                    <DeleteIcon />
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

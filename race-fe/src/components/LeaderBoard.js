@@ -6,7 +6,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
+  Chip
 } from '@mui/material'
 
 const LeaderBoard = () => {
@@ -39,7 +40,12 @@ const LeaderBoard = () => {
           {leaderboardData.map((user, index) => (
             <TableRow key={index}>
               <TableCell>{user.username}</TableCell>
-              <TableCell>{user.teamName}</TableCell>
+              <TableCell>
+                <Chip
+                  label={user.teamName}
+                  style={{ backgroundColor: user.teamColour }}
+                />
+              </TableCell>
               <TableCell>{user.score}</TableCell>
               <TableCell>{user.scoredEventsCount}</TableCell>
             </TableRow>
