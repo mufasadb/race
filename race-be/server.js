@@ -106,7 +106,7 @@ app.get(
   passport.authenticate('discord', { failureRedirect: '/login' }),
   function (req, res) {
     // Successful authentication, redirect home.
-    res.redirect('http://localhost:3000/scoringEvent')
+    res.redirect('http://localhost:3000/')
     // res.json({ success: true, user: req.user })
   }
 )
