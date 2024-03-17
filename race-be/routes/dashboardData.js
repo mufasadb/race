@@ -18,9 +18,11 @@ router.get('/team-comparison', async (req, res) => {
   //get all users
 
   const teams = await Team.query()
-  const scoringEvents = await ScoringEvent.query().withGraphFetched(
-    '[scoreableObject,league]'
-  )
+
+  //only get scoring events that have been approved
+  const scoringEvents = await ScoringEvent.query()
+    .where('is_approved', true)
+    .withGraphFetched('[scoreableObject,league]')
   const users = await User.query()
   for (const event of scoringEvents) {
     // console.log(event)
@@ -89,7 +91,7 @@ router.get('/team-comparison', async (req, res) => {
 
 router.get('/leader-board', async (req, res) => {
   const users = await User.query()
-  const scoringEvents = await ScoringEvent.query()
+  const scoringEvents = await ScoringEvent.query().where('is_approved', true)
   const teams = await Team.query()
   const userScores = []
   for (const user of users) {
