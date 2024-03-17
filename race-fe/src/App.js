@@ -145,10 +145,10 @@ const App = () => {
                 component={CreateScoringEvent}
               />
               {/* <AdminOnlyRoute path='/player/:userId' component={PlayerData} /> */}
-              <LoggedInRoute path='/player' component={PlayerData} />
+              <LoggedInRoute path='/playerData' component={PlayerData} />
               <LoggedInRoute path='/login' component={LoginPage} />
               <AdminOnlyRoute
-                path='/scoringEvent'
+                path='/scoringEvents'
                 component={ScoringEventsTable}
               />
             </Switch>

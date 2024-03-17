@@ -69,11 +69,9 @@ router.post('/', async (req, res) => {
       event => event.scoreable_object_id === req.body.scoreable_object_id
     )
     if (existingBounty) {
-      return res
-        .status(400)
-        .json({
-          message: 'This player already has a bounty for this scoreable object'
-        })
+      return res.status(400).json({
+        message: 'This player already has a bounty for this scoreable object'
+      })
     }
   }
   try {
@@ -123,14 +121,18 @@ async function getScoringEvent (req, res, next) {
 }
 
 //get scoringEvent list by user id
-router.get('/user/:id', async (req, res) => {
+router.get('/by-user/:id', async (req, res) => {
+  if (req.params.id === 'undefined') {
+    res.status(400).json({ message: 'User ID is required' })
+  }
   try {
-    const scoringEvents = await ScoringEvent.query().where(
-      'user_id',
-      req.params.id
-    )
+    const scoringEvents = await ScoringEvent.query()
+      .where('user_id', req.params.id)
+      .withGraphFetched('[scoreableObject,league]')
+
     res.json(scoringEvents)
   } catch (err) {
+    console.log(err)
     res.status(500).json({ message: err.message })
   }
 })
@@ -141,6 +143,18 @@ router.get('/team/:id', async (req, res) => {
       'team_id',
       req.params.id
     )
+    res.json(scoringEvents)
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+})
+
+router.get('/approveable/list', async (req, res) => {
+  try {
+    const scoringEvents = await ScoringEvent.query()
+      .where('is_approved', false)
+      .withGraphFetched('[scoreableObject,league, user,team]')
+      console.log(scoringEvents)
     res.json(scoringEvents)
   } catch (err) {
     res.status(500).json({ message: err.message })

@@ -143,7 +143,6 @@ app.get('/auth/check', (req, res) => {
 //create a route that takes the session
 //and returns the user's role, their team id and their userId
 app.get('/user', (req, res) => {
-  console.log('got a request on a user')
   if (req.isAuthenticated()) {
     res.send(req.user)
   } else {

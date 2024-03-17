@@ -24,9 +24,10 @@ router.get('/team-comparison', async (req, res) => {
   const users = await User.query()
   for (const event of scoringEvents) {
     // console.log(event)
-    const scoreableObject = await ScoreableObject.query().findById(
-      event.scoreableObjectId
-    )
+    // const scoreableObject = await ScoreableObject.query().findById(
+    //   event.scoreableObjectId
+    // )
+    const scoreableObject = event.scoreableObject
     if (
       scoreableObject.submittableType === 'player_bounty' ||
       scoreableObject.submittableType === 'team_bounty' ||

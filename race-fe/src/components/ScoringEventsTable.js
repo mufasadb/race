@@ -11,8 +11,10 @@ import {
   TableSortLabel
 } from '@mui/material'
 import { Check as CheckIcon, Delete as DeleteIcon } from '@mui/icons-material'
+import UserContext from '../context/UserContext'
 
 const ScoringEventsPage = () => {
+  const { userId, teamId, isAdmin, isLoggedIn } = React.useContext(UserContext)
   const [scoringEvents, setScoringEvents] = useState([])
   const [order, setOrder] = useState('asc')
   const [orderBy, setOrderBy] = useState('')
@@ -20,35 +22,15 @@ const ScoringEventsPage = () => {
   useEffect(() => {
     const fetchScoringEvents = async () => {
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoring-events`
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoring-events/approveable/list`
       )
       const data = await response.json()
-      // You would need to implement getUserName and getScoreableName functions
-      // that map the user and scoreable object IDs to their names.
-      const transformedData = data.map(event => ({
-        ...event,
-        username: getUserName(event.user_id), // Implement this
-        scoreableName: getScoreableName(event.scoreable_object_id) // Implement this
-      }))
-      setScoringEvents(transformedData)
+      console.log(data)
+      setScoringEvents(data)
     }
 
     fetchScoringEvents()
   }, [])
-  const getUserName = async userId => {
-    const response = await fetch(
-      `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/users/${userId}`
-    )
-    const data = await response.json()
-    return data.username
-  }
-  const getScoreableName = async scoreableId => {
-    const response = await fetch(
-      `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoreable-objects/${scoreableId}`
-    )
-    const data = await response.json()
-    return data.name
-  }
 
   // Sorting handlers
   const handleRequestSort = property => {
@@ -58,15 +40,15 @@ const ScoringEventsPage = () => {
   }
 
   // Implement the sort function based on Material-UI's guidelines or your own sorting logic
-  const sortedScoringEvents = scoringEvents.sort((a, b) => {
-    if (a[orderBy] < b[orderBy]) {
-      return order === 'asc' ? -1 : 1
-    }
-    if (a[orderBy] > b[orderBy]) {
-      return order === 'asc' ? 1 : -1
-    }
-    return 0
-  })
+  // const sortedScoringEvents = scoringEvents.sort((a, b) => {
+  //   if (a[orderBy] < b[orderBy]) {
+  //     return order === 'asc' ? -1 : 1
+  //   }
+  //   if (a[orderBy] > b[orderBy]) {
+  //     return order === 'asc' ? 1 : -1
+  //   }
+  //   return 0
+  // })
 
   // Approval and deletion handlers
   const handleApprove = id => {
@@ -100,8 +82,9 @@ const ScoringEventsPage = () => {
     { id: 'username', label: 'Player Username', minWidth: 170 },
     { id: 'scoreableName', label: 'Scoreable Object', minWidth: 100 },
     { id: 'timestamp', label: 'Timestamp', minWidth: 170 },
-    { id: 'is_approved', label: 'Approved', minWidth: 170 },
-    { id: 'point_total', label: 'Points', minWidth: 170 }
+    { id: 'evidenceURL', label: 'Evidence URL', minWidth: 170},
+    // { id: 'is_approved', label: 'Approved', minWidth: 170 },
+    { id: 'pointTotal', label: 'Points', minWidth: 170 }
     // Add more columns as needed
   ]
 
@@ -125,13 +108,14 @@ const ScoringEventsPage = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {sortedScoringEvents.map(event => (
+          {scoringEvents.map(event => (
             <TableRow key={event.id}>
-              <TableCell>{event.username}</TableCell>
-              <TableCell>{event.scoreableName}</TableCell>
-              <TableCell>{event.timestamp}</TableCell>
-              <TableCell>{event.is_approved}</TableCell>
-              <TableCell>{event.point_total}</TableCell>
+              <TableCell>{event.user.username}</TableCell>
+              <TableCell>{event.scoreableObject.name}</TableCell>
+              <TableCell>{event.createdAt}</TableCell>
+              {/* <TableCell>{event.is_approved}</TableCell> */}
+              <TableCell>{event.evidenceUrl}</TableCell>
+              <TableCell>{event.pointTotal}</TableCell>
               <TableCell>
                 <IconButton
                   onClick={() => handleApprove(event.id)}

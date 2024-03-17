@@ -15,6 +15,8 @@ class ScoringEvents extends Model {
     // Import your related models at the top or use require syntax inside the function to prevent circular dependency issues
     const League = require('./league')
     const ScoreableObject = require('./scoreableObject')
+    const User = require('./user')
+    const Team = require('./team')
 
     return {
       league: {
@@ -31,6 +33,22 @@ class ScoringEvents extends Model {
         join: {
           from: 'scoringEvents.scoreableObjectId',
           to: 'scoreableObjects.id'
+        }
+      },
+      user:{
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
+        join: {
+          from: 'scoringEvents.userId',
+          to: 'users.id'
+        }
+      },
+      team:{
+        relation: Model.BelongsToOneRelation,
+        modelClass: Team,
+        join: {
+          from: 'scoringEvents.teamId',
+          to: 'teams.id'
         }
       }
       // Add other relations if necessary

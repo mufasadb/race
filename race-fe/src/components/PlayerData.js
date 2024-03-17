@@ -4,6 +4,7 @@ import UserContext from '../context/UserContext'
 import TeamComparison from './TeamComparison'
 import LeaderBoard from './LeaderBoard'
 import ScoredObjects from './ScoredObjects'
+import AvailableScoreableObjects from './AvailableScoreableObjects'
 
 const PlayerData = () => {
   const { userId, teamId, isAdmin, isLoggedIn } = React.useContext(UserContext)
@@ -16,7 +17,7 @@ const PlayerData = () => {
           {/* Top Left - Player Leaderboard */}
           <Box mt={4} p={2}>
             <Paper elevation={3}>
-              <LeaderBoard />
+              <ScoredObjects />
             </Paper>
           </Box>
         </Box>
@@ -24,8 +25,7 @@ const PlayerData = () => {
         {/* Bottom Section - Available Bounties */}
         <Box mt={4} p={2}>
           <Paper elevation={3}>
-            {' '}
-            <ScoredObjects />
+            <AvailableScoreableObjects />
           </Paper>
         </Box>
       </Box>

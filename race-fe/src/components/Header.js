@@ -36,6 +36,9 @@ const Header = ({ isLoggedIn, isAdmin }) => {
             <li>
               <Link to='/CreateScoreableObject'>Create Scoreable Event</Link>
             </li>
+            <li>
+              <Link to='/scoringEvents'>Review Scoreables</Link>
+            </li>
           </>
         )}
         {!isLoggedIn && (
