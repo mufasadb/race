@@ -22,7 +22,7 @@ router.get('/:id', getScoreableObject, (req, res) => {
 
 // Create scoreableObject
 router.post('/', async (req, res) => {
-  if(res.points == 0){
+  if (res.points == 0) {
     res.status(400).json({ message: 'Points are required' })
   }
   try {
@@ -96,7 +96,7 @@ router.get('/available/league-bounties', async (req, res) => {
     )
     const availableBounties = scoreableObjects.filter(scoreableObject => {
       return scoringEvents.every(
-        scoringEvent => scoringEvent.scoreable_object_id !== scoreableObject.id
+        scoringEvent => scoringEvent.scoreableObjectId !== scoreableObject.id
       )
     })
     res.json(availableBounties)
@@ -121,7 +121,7 @@ router.get('/available/team-bounties/:id', async (req, res) => {
     )
     const availableBounties = scoreableObjects.filter(scoreableObject => {
       return scoringEvents.every(
-        scoringEvent => scoringEvent.scoreable_object_id !== scoreableObject.id
+        scoringEvent => scoringEvent.scoreableObjectId !== scoreableObject.id
       )
     })
     res.json(availableBounties)
@@ -147,7 +147,7 @@ router.get('/available/player-bounties/:id', async (req, res) => {
     )
     const availableBounties = scoreableObjects.filter(scoreableObject => {
       return scoringEvents.every(
-        scoringEvent => scoringEvent.scoreable_object_id !== scoreableObject.id
+        scoringEvent => scoringEvent.scoreableObjectId !== scoreableObject.id
       )
     })
     res.json(availableBounties)

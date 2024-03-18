@@ -62,6 +62,7 @@ const ScoredObjects = () => {
             <TableCell>Description</TableCell>
             <TableCell>Points</TableCell>
             <TableCell>Date</TableCell>
+            <TableCell>Is Approved</TableCell>
             {/* Add other relevant columns as needed */}
           </TableRow>
         </TableHead>
@@ -71,7 +72,8 @@ const ScoredObjects = () => {
               <TableCell>{object.scoreableObject.name}</TableCell>
               <TableCell>{object.scoreableObject.description}</TableCell>
               <TableCell>{object.pointTotal}</TableCell>
-              <TableCell>{timeAgo(new Date(object.createdAt))}</TableCell>
+              <TableCell>{object.createdAt ? timeAgo(new Date(object.createdAt)):''}</TableCell>
+              <TableCell>{object.isApproved? "Approved" : "Not Yet Approved"}</TableCell>
               {/* Render other object properties as needed */}
             </TableRow>
           ))}

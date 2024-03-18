@@ -42,26 +42,40 @@ const AvailableScoreableObjects = () => {
       console.error(error)
     }
   }
+   const convertTypeToHumanReadable = scoreableType => {
+    switch (scoreableType) {
+      case 'player_bounty':
+        return 'Player Bounty'
+      case 'team_bounty':
+        return 'Team Bounty'
+      case 'league_bounty':
+        return 'League Bounty'
+      case 'server_bounty':
+        return 'Server Bounty'
+      default:
+        return 'Unknown'
+    }
+  }
 
   return (
     <TableContainer component={Paper}>
       <Table aria-label='Available Scoreable Objects'>
         <TableHead>
           <TableRow>
-            <TableCell>ID</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Description</TableCell>
             <TableCell>Points</TableCell>
+            <TableCell>Type</TableCell>
             {/* Add other relevant columns as needed */}
           </TableRow>
         </TableHead>
         <TableBody>
           {scoreableObjects.map((object, index) => (
             <TableRow key={index}>
-              <TableCell>{object.id}</TableCell>
               <TableCell>{object.name}</TableCell>
               <TableCell>{object.description}</TableCell>
               <TableCell>{object.points}</TableCell>
+              <TableCell>{convertTypeToHumanReadable(object.submittableType)}</TableCell>
               {/* Render other object properties as needed */}
             </TableRow>
           ))}
@@ -72,4 +86,3 @@ const AvailableScoreableObjects = () => {
 }
 
 export default AvailableScoreableObjects
-

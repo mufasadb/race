@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'
+import { IconButton } from '@mui/material'
+import { Delete as DeleteIcon } from '@mui/icons-material'
 
 const ScoreableObjectsTable = () => {
   const [scoreableEvents, setScoreableEvents] = useState([])
@@ -17,6 +19,25 @@ const ScoreableObjectsTable = () => {
 
     fetchScoreableEvents()
   }, [])
+  const handleDelete = async id => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoreable-objects/${id}`,
+        {
+          method: 'DELETE',
+          credentials: 'include'
+        }
+      )
+      const res = await response.json()
+      if (res.status === 200) {
+        window.location.reload()
+      } else {
+        window.alert(`There was an error deleting the scoreable object /n ${res.message}`)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const indexOfLastEvent = currentPage * eventsPerPage
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage
@@ -39,6 +60,7 @@ const ScoreableObjectsTable = () => {
             <th>League Multiplier</th>
             <th>Points</th>
             <th>submittable_type</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -51,13 +73,12 @@ const ScoreableObjectsTable = () => {
               <td>{event.points}</td>
               <td>{event.submittableType}</td>
               <td>
-                <button
-                  onClick={() => {
-                    // Handle delete
-                  }}
+                <IconButton
+                  onClick={() => handleDelete(event.id)}
+                  aria-label='delete'
                 >
-                  Delete
-                </button>
+                  <DeleteIcon />
+                </IconButton>
               </td>
             </tr>
           ))}

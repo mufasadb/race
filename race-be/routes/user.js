@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
   if (req.body.username === 'freney' || req.body.username === 'beachy') {
     req.body.role = 'admin'
   } else {
-    req.body.role = 'user'
+    req.body.role = 'player'
   }
   try {
     const newUser = await User.query().insert(req.body)

@@ -3,8 +3,10 @@ import Cookies from 'js-cookie'
 import UserContext from '../context/UserContext'
 
 const ScoringSubmission = () => {
-  const { userId, teamId, isAdmin, isLoggedIn } = React.useContext(UserContext)
+  const { userId, teamId, isAdmin, isLoggedIn, isTeamLeader } =
+    React.useContext(UserContext)
 
+  console.log(userId, teamId, isAdmin, isLoggedIn, isTeamLeader)
   // console.log(userId)
   const [scoreableObjectID, setScoreableObjectID] = useState('')
   const [leagueID, setLeagueID] = useState('')
@@ -21,29 +23,34 @@ const ScoringSubmission = () => {
   // Fetch scoreable objects
   useEffect(() => {
     const fetchScoreableObjects = async () => {
-      try {
-        const responses = await Promise.all([
-          fetch(
-            `${process.env.REACT_APP_BACKEND_URL}${
-              process.env.REACT_APP_BACKEND_PORT
-            }/scoreable-objects/available/player-bounties/${
-              userId ? userId : 1
-            }`
-          ),
-          fetch(
-            `${process.env.REACT_APP_BACKEND_URL}${
-              process.env.REACT_APP_BACKEND_PORT
-            }/scoreable-objects/available/team-bounties/${teamId ? teamId : 1}`
-          ),
-          fetch(
-            `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoreable-objects/available/league-bounties`
-          )
-        ])
-        const data = await Promise.all(responses.map(res => res.json()))
-        setScoreableObjects(data.flat())
-        setSelectedScoreable(scoreableObjects[0].id)
-      } catch (error) {
-        console.error(error)
+      if (isTeamLeader) {
+      } else {
+        try {
+          const responses = await Promise.all([
+            fetch(
+              `${process.env.REACT_APP_BACKEND_URL}${
+                process.env.REACT_APP_BACKEND_PORT
+              }/scoreable-objects/available/player-bounties/${
+                userId ? userId : 1
+              }`
+            ),
+            fetch(
+              `${process.env.REACT_APP_BACKEND_URL}${
+                process.env.REACT_APP_BACKEND_PORT
+              }/scoreable-objects/available/team-bounties/${
+                teamId ? teamId : 1
+              }`
+            ),
+            fetch(
+              `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoreable-objects/available/league-bounties`
+            )
+          ])
+          const data = await Promise.all(responses.map(res => res.json()))
+          setScoreableObjects(data.flat())
+          setSelectedScoreable(scoreableObjects[0].id)
+        } catch (error) {
+          console.error(error)
+        }
       }
     }
 
@@ -98,6 +105,12 @@ const ScoringSubmission = () => {
   }
 
   const handleSubmit = event => {
+    //check if all fields are full
+    if (!scoreableObjectID || !leagueID || !evidenceURL) {
+      alert('Please fill out all fields')
+      return
+    }
+
     event.preventDefault()
 
     const data = {
@@ -158,7 +171,7 @@ const ScoringSubmission = () => {
   return (
     <div style={{ display: 'flex' }}>
       <form onSubmit={handleSubmit} style={{ flex: 1 }}>
-        <div className="form-field">
+        <div className='form-field'>
           <label htmlFor='scoreableObjectID'>Select your scoreable:</label>
           <select
             id='scoreableObjectID'
@@ -177,14 +190,18 @@ const ScoringSubmission = () => {
             ))}
           </select>
         </div>
-        <div className="form-field">
+        <div className='form-field'>
           <label htmlFor='leagueID'>League:</label>
+
           <select
             id='leagueID'
             value={leagueID}
             onChange={e => setLeagueID(e.target.value)}
             required
           >
+            <option key='' value=''>
+              Select a league
+            </option>
             {leagues.map(league => (
               <option key={league.id} value={league.id}>
                 {league.name}
@@ -193,7 +210,7 @@ const ScoringSubmission = () => {
           </select>
         </div>
 
-        <div className="form-field">
+        <div className='form-field'>
           <label htmlFor='teamID'>Team:</label>
           <select
             id='teamID'
@@ -209,7 +226,7 @@ const ScoringSubmission = () => {
           </select>
         </div>
 
-        <div className="form-field">
+        <div className='form-field'>
           <label htmlFor='userID'>User:</label>
           <select
             id='userID'
@@ -235,7 +252,7 @@ const ScoringSubmission = () => {
         />
       </div> */}
 
-        <div className="form-field">
+        <div className='form-field'>
           <label htmlFor='evidenceURL'>Evidence URL:</label>
           <input
             id='evidenceURL'

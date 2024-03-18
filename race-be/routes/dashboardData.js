@@ -60,16 +60,19 @@ router.get('/team-comparison', async (req, res) => {
       },
       topContributers: []
     }
-    for (const event of scoringEvents) {
-      if (event.teamId === team.id) {
-        teamData.totalPoints += event.pointTotal
+    for (const scoreEvent of scoringEvents) {
+      if (scoreEvent.teamId === team.id) {
+        teamData.totalPoints += scoreEvent.scoreableObject.leagueMultiplyer
+          ? scoreEvent.scoreableObject.points *
+            scoreEvent.league.scoreMultiplier
+          : scoreEvent.scoreableObject.points
         teamData.totalScoringEvents++
-        if (event.isBounty) {
+        if (scoreEvent.isBounty) {
           teamData.bountiesClaimed++
-          if (event.createdAt > teamData.mostRecentBounty.claimedAt) {
-            teamData.mostRecentBounty.name = event.scoreableObject.name
-            teamData.mostRecentBounty.claimedAt = event.createdAt
-            const user = await User.query().findById(event.userId)
+          if (scoreEvent.createdAt > teamData.mostRecentBounty.claimedAt) {
+            teamData.mostRecentBounty.name = scoreEvent.scoreableObject.name
+            teamData.mostRecentBounty.claimedAt = scoreEvent.createdAt
+            const user = await User.query().findById(scoreEvent.userId)
             teamData.mostRecentBounty.username = user.username
             // const ScoreableObject = await ScoreableObject.query().findById(
             //   event.scoreableObjectId
@@ -77,10 +80,10 @@ router.get('/team-comparison', async (req, res) => {
             // teamData.mostRecentBounty.username = ScoreableObject.username
           }
         }
-        if (event.createdAt > teamData.mostRecentContributer.claimedAt) {
-          const user = await User.query().findById(event.userId)
+        if (scoreEvent.createdAt > teamData.mostRecentContributer.claimedAt) {
+          const user = await User.query().findById(scoreEvent.userId)
           teamData.mostRecentContributer.username = user.username
-          teamData.mostRecentContributer.claimedAt = event.createdAt
+          teamData.mostRecentContributer.claimedAt = scoreEvent.createdAt
         }
       }
     }
@@ -91,21 +94,30 @@ router.get('/team-comparison', async (req, res) => {
 
 router.get('/leader-board', async (req, res) => {
   const users = await User.query()
-  const scoringEvents = await ScoringEvent.query().where('is_approved', true)
+  const scoringEvents = await ScoringEvent.query()
+    .where('is_approved', true)
+    .withGraphFetched('[scoreableObject,league]')
   const teams = await Team.query()
   const userScores = []
   for (const user of users) {
     let score = 0
     let count = 0
-    for (const event of scoringEvents) {
-      if (event.userId === user.id) {
-        score += event.pointTotal
+    console.log(user)
+    for (const scoreEvent of scoringEvents) {
+      console.log(scoreEvent)
+      if (scoreEvent.userId === user.id) {
+        score += scoreEvent.scoreableObject.leagueMultiplyer
+          ? scoreEvent.scoreableObject.points *
+            scoreEvent.league.scoreMultiplier
+          : scoreEvent.scoreableObject.points
+        count++
       }
     }
     user.score = score
     user.scoredEventsCount = count
-    user.teamName = teams.find(team => team.id === user.teamId).name
-    user.teamColour = teams.find(team => team.id === user.teamId).colour
+    team = teams.find(team => team.id === user.teamId)
+    user.teamName = team ? team.name : 'No Team'
+    user.teamColour = team ? team.colour : '#FFFFFF'
     userScores.push(user)
   }
   userScores.sort((a, b) => {

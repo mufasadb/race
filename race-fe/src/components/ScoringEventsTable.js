@@ -39,16 +39,12 @@ const ScoringEventsPage = () => {
     setOrderBy(property)
   }
 
-  // Implement the sort function based on Material-UI's guidelines or your own sorting logic
-  // const sortedScoringEvents = scoringEvents.sort((a, b) => {
-  //   if (a[orderBy] < b[orderBy]) {
-  //     return order === 'asc' ? -1 : 1
-  //   }
-  //   if (a[orderBy] > b[orderBy]) {
-  //     return order === 'asc' ? 1 : -1
-  //   }
-  //   return 0
-  // })
+  const urlRegex = /^(https?:\/\/[^\s]+)/g
+  const isHttpsUrl = url => {
+    if (urlRegex.test(url) && url.startsWith('https://')) {
+      return true
+    }
+  }
 
   // Approval and deletion handlers
   const handleApprove = id => {
@@ -82,10 +78,8 @@ const ScoringEventsPage = () => {
     { id: 'username', label: 'Player Username', minWidth: 170 },
     { id: 'scoreableName', label: 'Scoreable Object', minWidth: 100 },
     { id: 'timestamp', label: 'Timestamp', minWidth: 170 },
-    { id: 'evidenceURL', label: 'Evidence URL', minWidth: 170},
-    // { id: 'is_approved', label: 'Approved', minWidth: 170 },
+    { id: 'evidenceURL', label: 'Evidence URL', minWidth: 170 },
     { id: 'pointTotal', label: 'Points', minWidth: 170 }
-    // Add more columns as needed
   ]
 
   return (
@@ -114,7 +108,19 @@ const ScoringEventsPage = () => {
               <TableCell>{event.scoreableObject.name}</TableCell>
               <TableCell>{event.createdAt}</TableCell>
               {/* <TableCell>{event.is_approved}</TableCell> */}
-              <TableCell>{event.evidenceUrl}</TableCell>
+              <TableCell>
+                {isHttpsUrl(event.evidenceUrl) ? (
+                  <a
+                    href={event.evidenceUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    Link to Evidence
+                  </a>
+                ) : (
+                  event.evidenceUrl
+                )}
+              </TableCell>
               <TableCell>{event.pointTotal}</TableCell>
               <TableCell>
                 <IconButton

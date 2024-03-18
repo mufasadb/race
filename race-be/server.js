@@ -144,6 +144,9 @@ app.get('/auth/check', (req, res) => {
 //and returns the user's role, their team id and their userId
 app.get('/user', (req, res) => {
   if (req.isAuthenticated()) {
+    if (req.user.role === 'admin' || req.user.role === 'team_leader') {
+      req.user.isTeamLeader = true
+    }
     res.send(req.user)
   } else {
     //return a 401

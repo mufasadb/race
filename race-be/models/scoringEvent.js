@@ -4,9 +4,6 @@ class ScoringEvents extends Model {
   static get tableName () {
     return 'scoringEvents'
   }
-  static get virtualAttributes () {
-    return ['pointTotal']
-  }
 
   static get idColumn () {
     return 'id'
@@ -35,7 +32,7 @@ class ScoringEvents extends Model {
           to: 'scoreableObjects.id'
         }
       },
-      user:{
+      user: {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
@@ -43,7 +40,7 @@ class ScoringEvents extends Model {
           to: 'users.id'
         }
       },
-      team:{
+      team: {
         relation: Model.BelongsToOneRelation,
         modelClass: Team,
         join: {
@@ -53,13 +50,6 @@ class ScoringEvents extends Model {
       }
       // Add other relations if necessary
     }
-  }
-  get pointTotal () {
-    // Assuming scoreableObject and league are loaded. You may need to adjust this logic.
-    if (this.scoreableObject && this.league) {
-      return this.scoreableObject.points * this.league.scoreMultiplier
-    }
-    return 0
   }
 
   static get jsonSchema () {

@@ -34,14 +34,17 @@ router.post('/', async (req, res) => {
   // make sure that there isn't already a scoring event for that scoreable object
 
   const scoreableObject = await ScoreableObject.query().findById(
-    req.body.scoreable_object_id
+    req.body.scoreableObjectId
   )
+  console.log(req.body)
+  console.log(scoreableObject)
+
   const user = await User.query().findById(req.body.user_id)
   const team = await Team.query().findById(req.body.team_id)
 
   if (
-    scoreableObject.submittable_type !== 'league_bounty' &&
-    scoreableObject.submittable_type !== 'team_bounty'
+    scoreableObject.submittableType !== 'league_bounty' &&
+    scoreableObject.submittableType !== 'team_bounty'
   ) {
     if (req.body.user_id === null) {
       return res
@@ -50,8 +53,8 @@ router.post('/', async (req, res) => {
     }
   }
   if (
-    scoreableObject.submittable_type === 'league_bounty' ||
-    scoreableObject.submittable_type === 'team_bounty'
+    scoreableObject.submittableType === 'league_bounty' ||
+    scoreableObject.submittableType === 'team_bounty'
   ) {
     if (req.body.team_id === null) {
       return res
@@ -60,13 +63,13 @@ router.post('/', async (req, res) => {
     }
   }
   //if its a player bounty, check that the player doesnt already have a bounty by this scoreable object
-  if (scoreableObject.submittable_type === 'player_bounty') {
+  if (scoreableObject.submittableType === 'player_bounty') {
     const scoringEvents = await ScoringEvent.query().where(
       'user_id',
       req.body.user_id
     )
     const existingBounty = scoringEvents.find(
-      event => event.scoreable_object_id === req.body.scoreable_object_id
+      event => event.scoreableObjectId === req.body.scoreableObjectId
     )
     if (existingBounty) {
       return res.status(400).json({

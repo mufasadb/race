@@ -91,6 +91,7 @@ const App = () => {
   const [userId, setuserId] = useState(/* initial player ID */)
   const [teamId, setTeamId] = useState(/* initial team ID */)
   const [isAdmin, setIsAdmin] = useState(/* initial admin status */)
+  const [isTeamLeader, setIsTeamLeader] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
@@ -112,6 +113,7 @@ const App = () => {
           setIsLoggedIn(true)
           setuserId(data.id)
           setTeamId(data.teamId)
+          setIsTeamLeader(data.isTeamLeader)
           if (data.role === 'admin') {
             setIsAdmin(true)
           }
@@ -120,7 +122,7 @@ const App = () => {
   }, [])
 
   return (
-    <UserContext.Provider value={{ userId, teamId, isAdmin, isLoggedIn }}>
+    <UserContext.Provider value={{ userId, teamId, isAdmin, isLoggedIn, isTeamLeader }}>
       <ThemeProvider theme={theme}>
         <div className='App'>
           <Header isLoggedIn={isLoggedIn} isAdmin={isAdmin} />{' '}

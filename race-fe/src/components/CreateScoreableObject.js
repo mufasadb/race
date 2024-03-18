@@ -5,10 +5,10 @@ import Cookies from 'js-cookie'
 const CreateScoreableObject = () => {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
-  const [requiresEvidence, setRequiresEvidence] = useState(false)
-  const [leagueMultiplier, setLeagueMultiplier] = useState(false)
-  const [points, setPoints] = useState(0)
-  const [submissionType, setSubmissionType] = useState('character')
+  const [requiresEvidence, setRequiresEvidence] = useState(true)
+  const [leagueMultiplier, setLeagueMultiplier] = useState(true)
+  const [points, setPoints] = useState(1)
+  const [submissionType, setSubmissionType] = useState('player_bounty')
   const handleSubmit = async object => {
     object.preventDefault()
     const data = {
@@ -21,17 +21,24 @@ const CreateScoreableObject = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoreable-objects/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data),
-        credentials: 'include'
-      })
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}${process.env.REACT_APP_BACKEND_PORT}/scoreable-objects/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data),
+          credentials: 'include'
+        }
+      )
       const res = await response.json()
       console.log(res)
+      if (res.name) {
+        window.location.reload()
+      }
     } catch (error) {
+      window.alert(error)
       console.log(error)
     }
   }
@@ -99,6 +106,7 @@ const CreateScoreableObject = () => {
         </select>
         <div></div>
         {/* Submit button */}
+        <br></br>
         <button type='submit'>Submit</button>
       </form>
     </div>
